@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <url>
+        <loc>https://ironzero41.com.br/</loc>
+        <lastmod>2026-10-22</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://ironzero41.com.br/assets/img/ironzero_fachada.jpg</image:loc>
+            <image:title>Fachada Oficial IRONZERO41 Academia Curitiba</image:title>
+            <image:caption>Academia IRONZERO41 no Campo de Santana em Curitiba</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://ironzero41.com.br/assets/img/ironzero_salao_principal.jpg</image:loc>
+            <image:title>Salão de Musculação IRONZERO41</image:title>
+            <image:caption>Equipamentos de musculação e iluminação hexagonal na IRONZERO41</image:caption>
+        </image:image>
+    </url>
+</urlset>

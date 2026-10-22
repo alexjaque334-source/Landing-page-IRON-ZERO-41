@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# AI Crawlers para Generative Engine Optimization (GEO)
+# Permitir que ferramentas como ChatGPT, Perplexity, Claude e Gemini citem a IRONZERO41
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://ironzero41.com.br/sitemap.xml

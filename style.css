@@ -1,0 +1,89 @@
+/* Custom Styles para IRONZERO41 Academia */
+
+/* Efeito Glow Radial no Hero e Seção Final */
+.hero-radial-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, rgba(255, 184, 0, 0.12) 0%, rgba(245, 158, 11, 0.05) 45%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #07080b;
+}
+::-webkit-scrollbar-thumb {
+    background: #222738;
+    border-radius: 5px;
+    border: 2px solid #07080b;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #FFB800;
+}
+
+/* Animações e Transições Suaves */
+.carousel-slide {
+    transition: transform 0.4s ease-out;
+}
+
+/* Indicadores de Dots */
+.dot-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.dot-indicator.active {
+    width: 28px;
+    background-color: #FFB800;
+}
+
+/* Botões com Efeito de Shimmer e Pulso */
+.cta-whatsapp-btn {
+    position: relative;
+    overflow: hidden;
+}
+.cta-whatsapp-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        rgba(255, 255, 255, 0) 20%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 80%
+    );
+    transform: rotate(30deg);
+    animation: shimmerEffect 4s infinite;
+}
+
+@keyframes shimmerEffect {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    30%, 100% { transform: translateX(100%) rotate(30deg); }
+}
+
+/* FAQ Accordion Transitions */
+.faq-item.active .faq-content {
+    max-height: 280px;
+}
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+    color: #FFB800;
+}
+.faq-item.active {
+    border-color: rgba(255, 184, 0, 0.4);
+    background-color: #11141e;
+}
