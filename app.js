@@ -1,5 +1,6 @@
 /**
- * IRONZERO41 Academia - Interatividade da Landing Page
+ * IRONZERO41 Academia - Portal Oficial
+ * Interatividade, Carrossel, Horários em Tempo Real, Tabs e FAQ
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,24 +10,30 @@ document.addEventListener('DOMContentLoaded', () => {
         currentYearEl.textContent = new Date().getFullYear();
     }
 
-    // 2. Verificador de Horário Aberto / Fechado em Tempo Real
+    // 2. Verificador de Status Aberto / Fechado em Tempo Real
     initGymStatusChecker();
 
     // 3. Menu Mobile Drawer
     initMobileMenu();
 
-    // 4. Carrossel de Fotos da Estrutura
+    // 4. Carrossel de Fotos Reais da Estrutura
     initStructureCarousel();
 
-    // 5. FAQ Accordion
+    // 5. Tabs Interativas do Tour da Estrutura
+    initStructureTabs();
+
+    // 6. FAQ Accordion
     initFaqAccordion();
 
-    // 6. Tooltip do WhatsApp Flutuante
+    // 7. Tooltip do WhatsApp Flutuante
     initWhatsTooltip();
+
+    // 8. Gráfico de Horários de Movimento (Picos)
+    initCrowdChart();
 });
 
 /**
- * Verifica se a academia está aberta com base no fuso horário do Brasil
+ * Verifica o status da academia em tempo real com base no horário de Curitiba
  * Seg-Sex: 06:00 às 22:30
  * Sábado: 10:30 às 15:00
  * Domingo: Fechado
@@ -38,8 +45,7 @@ function initGymStatusChecker() {
 
     function updateStatus() {
         const now = new Date();
-        // Dia da semana: 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-        const day = now.getDay();
+        const day = now.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
         const hour = now.getHours();
         const minute = now.getMinutes();
         const currentTime = hour + minute / 60;
@@ -51,25 +57,25 @@ function initGymStatusChecker() {
             // Segunda a Sexta: 06:00 (6.0) até 22:30 (22.5)
             if (currentTime >= 6.0 && currentTime < 22.5) {
                 isOpen = true;
-                message = 'Aberta agora • Fecha às 22:30';
+                message = 'Academia Aberta Agora • Fecha às 22:30';
             } else if (currentTime < 6.0) {
                 message = 'Abre hoje às 06:00';
             } else {
-                message = 'Fechada • Abre amanhã às 06:00';
+                message = 'Fechada no momento • Abre amanhã às 06:00';
             }
         } else if (day === 6) {
             // Sábado: 10:30 (10.5) até 15:00 (15.0)
             if (currentTime >= 10.5 && currentTime < 15.0) {
                 isOpen = true;
-                message = 'Aberta agora • Fecha às 15:00';
+                message = 'Academia Aberta Agora • Fecha às 15:00';
             } else if (currentTime < 10.5) {
                 message = 'Abre hoje às 10:30';
             } else {
-                message = 'Fechada • Abre segunda às 06:00';
+                message = 'Fechada no momento • Abre segunda às 06:00';
             }
         } else {
             // Domingo
-            message = 'Fechada hoje • Abre segunda às 06:00';
+            message = 'Fechada aos domingos • Abre segunda às 06:00';
         }
 
         if (isOpen) {
@@ -82,12 +88,11 @@ function initGymStatusChecker() {
     }
 
     updateStatus();
-    // Atualizar a cada minuto
     setInterval(updateStatus, 60000);
 }
 
 /**
- * Toggle do Menu Mobile
+ * Menu Mobile Drawer
  */
 function initMobileMenu() {
     const menuBtn = document.getElementById('mobileMenuBtn');
@@ -97,12 +102,7 @@ function initMobileMenu() {
     if (!menuBtn || !mobileMenu) return;
 
     menuBtn.addEventListener('click', () => {
-        const isHidden = mobileMenu.classList.contains('hidden');
-        if (isHidden) {
-            mobileMenu.classList.remove('hidden');
-        } else {
-            mobileMenu.classList.add('hidden');
-        }
+        mobileMenu.classList.toggle('hidden');
     });
 
     mobileLinks.forEach(link => {
@@ -129,9 +129,7 @@ function initStructureCarousel() {
     let isDragging = false;
     let startPos = 0;
     let currentTranslate = 0;
-    let prevTranslate = 0;
 
-    // Determina quantos slides são visíveis conforme o breakpoint da tela
     function getVisibleSlidesCount() {
         if (window.innerWidth >= 1024) return 3;
         if (window.innerWidth >= 640) return 2;
@@ -143,7 +141,6 @@ function initStructureCarousel() {
         return Math.max(0, slides.length - visible);
     }
 
-    // Criar Dots
     function renderDots() {
         if (!dotsContainer) return;
         dotsContainer.innerHTML = '';
@@ -175,11 +172,8 @@ function initStructureCarousel() {
     function goToSlide(index) {
         const max = getMaxIndex();
         currentIndex = Math.max(0, Math.min(index, max));
-        
-        // Em mobile cada slide é 100%, em tablet 50%, em desktop 33.333%
         const slideWidthPercent = 100 / getVisibleSlidesCount();
         const translateX = -(currentIndex * slideWidthPercent);
-        
         track.style.transform = `translateX(${translateX}%)`;
         updateDots();
     }
@@ -202,7 +196,6 @@ function initStructureCarousel() {
         }
     }
 
-    // Botões
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
             nextSlide();
@@ -218,23 +211,18 @@ function initStructureCarousel() {
     }
 
     // Touch e Swipe para Celular
-    track.addEventListener('touchstart', touchStart);
-    track.addEventListener('touchmove', touchMove);
-    track.addEventListener('touchend', touchEnd);
-
-    function touchStart(event) {
-        startPos = event.touches[0].clientX;
+    track.addEventListener('touchstart', (e) => {
+        startPos = e.touches[0].clientX;
         isDragging = true;
         clearInterval(autoPlayTimer);
-    }
+    }, { passive: true });
 
-    function touchMove(event) {
+    track.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        const currentPosition = event.touches[0].clientX;
-        currentTranslate = currentPosition - startPos;
-    }
+        currentTranslate = e.touches[0].clientX - startPos;
+    }, { passive: true });
 
-    function touchEnd() {
+    track.addEventListener('touchend', () => {
         isDragging = false;
         if (currentTranslate < -50) {
             nextSlide();
@@ -243,9 +231,8 @@ function initStructureCarousel() {
         }
         currentTranslate = 0;
         resetAutoplay();
-    }
+    });
 
-    // Autoplay
     function startAutoplay() {
         autoPlayTimer = setInterval(nextSlide, 4500);
     }
@@ -255,7 +242,6 @@ function initStructureCarousel() {
         startAutoplay();
     }
 
-    // Pausar no Hover (Desktop)
     track.addEventListener('mouseenter', () => clearInterval(autoPlayTimer));
     track.addEventListener('mouseleave', () => startAutoplay());
 
@@ -269,7 +255,40 @@ function initStructureCarousel() {
 }
 
 /**
- * FAQ Accordion com transição e abertura/fechamento único
+ * Tabs Interativas do Tour da Estrutura
+ */
+function initStructureTabs() {
+    const tabButtons = document.querySelectorAll('.structure-tab-btn');
+    const tabPanels = document.querySelectorAll('.structure-tab-panel');
+
+    if (tabButtons.length === 0 || tabPanels.length === 0) return;
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-tab');
+
+            // Atualiza botões
+            tabButtons.forEach(b => {
+                b.classList.remove('active', 'bg-iron-gold', 'text-black');
+                b.classList.add('bg-white/5', 'text-slate-300');
+            });
+            btn.classList.add('active', 'bg-iron-gold', 'text-black');
+            btn.classList.remove('bg-white/5', 'text-slate-300');
+
+            // Atualiza painéis
+            tabPanels.forEach(panel => {
+                if (panel.id === target) {
+                    panel.classList.remove('hidden');
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
+        });
+    });
+}
+
+/**
+ * FAQ Accordion
  */
 function initFaqAccordion() {
     const faqButtons = document.querySelectorAll('.faq-button');
@@ -279,12 +298,10 @@ function initFaqAccordion() {
             const currentItem = btn.closest('.faq-item');
             const isActive = currentItem.classList.contains('active');
 
-            // Fechar todos os outros
             document.querySelectorAll('.faq-item').forEach(item => {
                 item.classList.remove('active');
             });
 
-            // Alternar o clicado
             if (!isActive) {
                 currentItem.classList.add('active');
             }
@@ -293,7 +310,7 @@ function initFaqAccordion() {
 }
 
 /**
- * Fechar Tooltip do WhatsApp Flutuante
+ * Tooltip do WhatsApp Flutuante
  */
 function initWhatsTooltip() {
     const closeBtn = document.getElementById('closeWhatsTooltip');
@@ -305,4 +322,36 @@ function initWhatsTooltip() {
             tooltip.style.display = 'none';
         });
     }
+}
+
+/**
+ * Gráfico Interativo de Horários de Movimento (Picos)
+ */
+function initCrowdChart() {
+    const chartTabWeekday = document.getElementById('chartTabWeekday');
+    const chartTabSaturday = document.getElementById('chartTabSaturday');
+    const weekdayBars = document.getElementById('weekdayBars');
+    const saturdayBars = document.getElementById('saturdayBars');
+
+    if (!chartTabWeekday || !chartTabSaturday || !weekdayBars || !saturdayBars) return;
+
+    chartTabWeekday.addEventListener('click', () => {
+        chartTabWeekday.classList.add('bg-iron-gold', 'text-black');
+        chartTabWeekday.classList.remove('bg-white/5', 'text-slate-300');
+        chartTabSaturday.classList.remove('bg-iron-gold', 'text-black');
+        chartTabSaturday.classList.add('bg-white/5', 'text-slate-300');
+
+        weekdayBars.classList.remove('hidden');
+        saturdayBars.classList.add('hidden');
+    });
+
+    chartTabSaturday.addEventListener('click', () => {
+        chartTabSaturday.classList.add('bg-iron-gold', 'text-black');
+        chartTabSaturday.classList.remove('bg-white/5', 'text-slate-300');
+        chartTabWeekday.classList.remove('bg-iron-gold', 'text-black');
+        chartTabWeekday.classList.add('bg-white/5', 'text-slate-300');
+
+        saturdayBars.classList.remove('hidden');
+        weekdayBars.classList.add('hidden');
+    });
 }
